@@ -52,7 +52,13 @@ app.get('/api/swagger.json', (req, res) => {
   res.send(specs);
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
+// Serve documentation
+app.get('/docs', (req, res) => {
+  res.sendFile(__dirname + '/docs.html');
+});
+
+// Remove problematic swagger setup and use simple docs
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
 
 /**
  * @swagger
@@ -255,7 +261,8 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Multi-Agent AI API',
-    documentation: `/api-docs`,
+    documentation: `/docs`,
+    swagger: `/api/swagger.json`,
     endpoints: {
       chat: 'POST /api/chat',
       agents: 'GET /api/agents',
