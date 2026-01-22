@@ -27,12 +27,12 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${port}`,
-        description: 'Development server',
+        url: process.env.NODE_ENV === 'production' ? 'https://agents-intro.vercel.app' : `http://localhost:${port}`,
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],
   },
-  apis: ['./api-server.js'],
+  apis: [__filename],
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
