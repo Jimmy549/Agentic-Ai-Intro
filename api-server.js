@@ -27,7 +27,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' ? process.env.RENDER_EXTERNAL_URL || 'https://your-app.onrender.com' : `http://localhost:${port}`,
+        url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`,
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],
@@ -36,7 +36,17 @@ const swaggerOptions = {
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  swaggerOptions: {
+    url: '/api/swagger.json'
+  }
+}));
+
+// Serve swagger.json
+app.get('/api/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
+});
 
 /**
  * @swagger
