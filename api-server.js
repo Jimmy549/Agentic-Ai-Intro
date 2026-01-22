@@ -27,7 +27,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production' ? 'https://agents-intro.vercel.app' : `http://localhost:${port}`,
+        url: process.env.NODE_ENV === 'production' ? process.env.RENDER_EXTERNAL_URL || 'https://your-app.onrender.com' : `http://localhost:${port}`,
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],
@@ -36,29 +36,7 @@ const swaggerOptions = {
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
-
-// Custom Swagger UI options for Vercel
-const swaggerUiOptions = {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Multi-Agent AI API',
-  swaggerOptions: {
-    url: '/api/swagger.json'
-  }
-};
-
-// Serve swagger.json separately
-app.get('/api/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(specs);
-});
-
-// Serve documentation
-app.get('/docs', (req, res) => {
-  res.sendFile(__dirname + '/docs.html');
-});
-
-// Remove problematic swagger setup and use simple docs
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 /**
  * @swagger
@@ -261,8 +239,7 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Multi-Agent AI API',
-    documentation: `/docs`,
-    swagger: `/api/swagger.json`,
+    documentation: '/api-docs',
     endpoints: {
       chat: 'POST /api/chat',
       agents: 'GET /api/agents',
